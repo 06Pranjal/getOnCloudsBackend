@@ -1,6 +1,7 @@
 package com.GetOnClouds.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -33,6 +34,11 @@ public class SecurityConfig {
                 );
 
         return httpSecurity.build();
+    }
+
+    @Bean
+    public CorsFilter corsFilter(){
+        return new CorsFilter(corsConfigurationSource());
     }
 
     @Bean
