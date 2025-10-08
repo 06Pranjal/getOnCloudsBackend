@@ -47,18 +47,22 @@ public class ClerkJwksProvider {
                 String n = keyNode.get("n").asText();
                 String e = keyNode.get("e").asText();
 
-                // Decode Base64URL
-                BigInteger modulus = new BigInteger(1, Base64.getUrlDecoder().decode(n));
-                BigInteger exponent = new BigInteger(1, Base64.getUrlDecoder().decode(e));
-
-                // Build RSA PublicKey
-                RSAPublicKeySpec spec = new RSAPublicKeySpec(modulus, exponent);
-                PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(spec);
-
-                // Cache it
-                keyCache.put(kid, publicKey);
+                PublicKey publicKey=createPublicKey(n,e);
+                keyCache.put(kid,publicKey);
             }
         }
         lastFetchTime = System.currentTimeMillis();
+    }
+
+    private PublicKey createPublicKey(String modulus, String exponent) throws Exception {
+        byte[] modulusBytes=Base64.getUrlDecoder().decode(modulus);
+        byte[] exponentBytes=Base64.getUrlDecoder().decode(exponent);
+
+        BigInteger modulusBigInt=new BigInteger(1,modulusBytes);
+        BigInteger exponentBigInt=new BigInteger(1,exponentBytes);
+
+        RSAPublicKeySpec spec=new RSAPublicKeySpec(modulusBigInt,exponentBigInt);
+        KeyFactory factory=KeyFactory.getInstance("RSA");
+        return factory.generatePublic(spec);
     }
 }
